@@ -25,58 +25,57 @@ import com.algaworks.osworks.domain.service.CadastroClienteService;
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
-	
-	@Autowired
-	private ClienteRepository clienteRepository;
-	
+
 	@Autowired
 	private CadastroClienteService cadastroCliente;
-	
-	@GetMapping
-	public List<Cliente> listar() {
-		return clienteRepository.findAll();
-	}
-	
-	@GetMapping("/{clienteId}")
-	public ResponseEntity<Cliente> buscar(@PathVariable Long clienteId) {
-		Optional<Cliente> cliente = clienteRepository.findById(clienteId);
-		
-		if (cliente.isPresent()) {
-			return ResponseEntity.ok(cliente.get());
-		}
-		
-		return ResponseEntity.notFound().build();
-	}
-	
+
+	@Autowired
+	private ClienteRepository clienteRepository;
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cliente adicionar(@Valid @RequestBody Cliente cliente) {
 		return cadastroCliente.salvar(cliente);
 	}
-	
+
 	@PutMapping("/{clienteId}")
-	public ResponseEntity<Cliente> atualizar(@Valid @PathVariable Long clienteId,
-		@RequestBody Cliente cliente) {
-		
+	public ResponseEntity<Cliente> atualizar(@Valid @PathVariable Long clienteId, @RequestBody Cliente cliente) {
+
 		if (!clienteRepository.existsById(clienteId)) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		cliente.setId(clienteId);
 		cliente = cadastroCliente.salvar(cliente);
-		
+
 		return ResponseEntity.ok(cliente);
 	}
-	
+
+	@GetMapping("/{clienteId}")
+	public ResponseEntity<Cliente> buscar(@PathVariable Long clienteId) {
+		Optional<Cliente> cliente = clienteRepository.findById(clienteId);
+
+		if (cliente.isPresent()) {
+			return ResponseEntity.ok(cliente.get());
+		}
+
+		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping
+	public List<Cliente> listar() {
+		return clienteRepository.findAll();
+	}
+
 	@DeleteMapping("/{clienteId}")
 	public ResponseEntity<Void> remover(@PathVariable Long clienteId) {
 
 		if (!clienteRepository.existsById(clienteId)) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		cadastroCliente.excluir(clienteId);
-		
+
 		return ResponseEntity.noContent().build();
 	}
 }
